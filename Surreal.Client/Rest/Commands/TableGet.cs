@@ -13,26 +13,12 @@ namespace Surreal.Client.Rest.Commands
 {
     public class TableGet
     {
-        internal static List<SurrealModel<T>> TableGetAll<T>(string tableName, RestClient client)
+        internal static SurrealDBResults<T> TableGetHandler<T>(string tableName, RestClient client, string id = "")
         {
-            string endpoint = string.Format(EndpointConstants.Table, tableName);
+            string endpoint = id == "" ? string.Format(EndpointConstants.Table, tableName) : string.Format(EndpointConstants.TableId, tableName, id);
             RestRequest request = new RestRequest(endpoint);
-            RestResponse response = RestSharpTaskRunner.RunRestSharpGet(client,request);
-            if(!response.IsSuccessful) 
-            {
-                return default;
-            }
-
-            return JsonConvert.DeserializeObject<List<SurrealModel<T>>>(response.Content);
-        }
-        internal static SurrealModel<T> TableGetSingle<T>(string tableName, string id, RestClient client)
-        {
-            string endpoint = string.Format(EndpointConstants.TableId, tableName, id);
-            RestRequest request = new RestRequest(endpoint);
-            RestResponse response = RestSharpTaskRunner.RunRestSharpGet(client, request);
-            if (!response.IsSuccessful)
-                return default;
-            return JsonConvert.DeserializeObject<SurrealModel<T>>(response.Content);
+            SurrealResponseHelper.GetAllSurrealDBResults<T>(RestSharpTaskRunner.RunRestSharpGet(client, request));
+            return SurrealResponseHelper.GetAllSurrealDBResults<T>(RestSharpTaskRunner.RunRestSharpGet(client, request)); ;
         }
     }
 }

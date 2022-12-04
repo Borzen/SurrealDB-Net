@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace Surreal.Client.Models
 {
-    public class SurrealDBResult<T>
+    public class SurrealDBResult<T> : SurrealDBResult
     {
-        public bool IsSuccessful { get; set; }
-        public string Error { get; set; }
         public T Result { get; set; }
+    }
+
+    public class SurrealDBResults<T> : SurrealDBResult
+    {
+        public List<T> Results { get; set; }
     }
 
     public class SurrealDBResult

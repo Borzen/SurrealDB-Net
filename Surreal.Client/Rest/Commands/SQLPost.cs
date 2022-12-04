@@ -13,16 +13,12 @@ namespace Surreal.Client.Rest.Commands
 {
     public class SQLPost
     {
-        internal static SurrealModel<T> RunSurrealSQLPost<T>(string surrealQL, RestClient client)
+        internal static List<T> RunSurrealSQLPost<T>(string surrealQL, RestClient client)
         {
             RestRequest request = new RestRequest(EndpointConstants.SQL);
             request.AddBody(surrealQL);
-            RestResponse response = RestSharpTaskRunner.RunRestSharpPost(client, request);
-            if (!response.IsSuccessful)
-            {
-                return default;
-            }
-            return JsonConvert.DeserializeObject<SurrealModel<T>>(response.Content);
+            var resultData = SurrealResponseHelper.GetSQLSurrealDBResult<T>(RestSharpTaskRunner.RunRestSharpPost(client, request));
+            return resultData.Result;
         }
     }
 }

@@ -22,17 +22,31 @@ namespace Surreal.Client.Rest.Commands
             RestResponse response = RestSharpTaskRunner.RunRestSharpPatch(client,request);
             bool isSuccessful = response.IsSuccessful;
             string error = "";
-            if (isSuccessful) 
+            if (!isSuccessful) 
             {
                 //TODO: Better error handling
-                error = "An error happened";
+                error = response.ErrorMessage;
+                return new SurrealDBResult<T>()
+                {
+                    Error = error,
+                    IsSuccessful = false,
+                    Result = default
+                };
             }
+
+            var surrealModel = JsonConvert.DeserializeObject<SurrealModel<T>>(response.Content);
+            if(surrealModel.Status != "OK")
+            {
+                error = "Error Happened";
+            }
+
             SurrealDBResult<T> surrealDBResult = new SurrealDBResult<T>()
             {
                 Error = error,
                 IsSuccessful = isSuccessful,
-                Result = isSuccessful ? JsonConvert.DeserializeObject<T>(response.Content) : default(T)
+                Result = isSuccessful ? surrealModel.Result.FirstOrDefault() : default
             };
+
             return surrealDBResult;
         }
     }

@@ -30,21 +30,7 @@ namespace Surreal.Client.Rest.Commands
             string recordJson = JsonConvert.SerializeObject(data);
             RestRequest request = new RestRequest(endpoint);
             request.AddJsonBody(recordJson);
-            RestResponse response = RestSharpTaskRunner.RunRestSharpPost(client,request);
-            bool isSuccessful = response.IsSuccessful;
-            string error = "";
-            if(!isSuccessful)
-            {
-                //TODO: Better Error handling.
-                error = "error happened";
-            }
-            SurrealDBResult<T> result = new SurrealDBResult<T>()
-            {
-                Error = error,
-                IsSuccessful = isSuccessful,
-                Result = isSuccessful ? JsonConvert.DeserializeObject<T>(response.Content) : default(T)
-            };
-            return result;
+            return SurrealResponseHelper.GetSingleSurrealDBResult<T>(RestSharpTaskRunner.RunRestSharpPost(client,request));
         }
     }
 }

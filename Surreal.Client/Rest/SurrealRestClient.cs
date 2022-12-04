@@ -46,31 +46,25 @@ namespace Surreal.Client.Rest
             return TableDelete.DeleteSingleRecord(tableName, id, restClient);
         }
 
-        public T ExecuteSqlQuery<T>(string sql)
+        public List<T> ExecuteSqlQuery<T>(string sql)
         {
-            var surrealData = SQLPost.RunSurrealSQLPost<T>(sql, restClient);
-            if (surrealData == default)
-                return default;
-            return surrealData.Result;
+            return SQLPost.RunSurrealSQLPost<T>(sql, restClient);
         }
 
-        public List<T> GetTableRecords<T>(string tableName)
+        public SurrealDBResults<T> GetTableRecords<T>(string tableName)
         {
-            List<T> returnData = new List<T>();
-            var surrealData = TableGet.TableGetAll<T>(tableName, restClient);
-            foreach(var data in surrealData)
-            {
-                returnData.Add(data.Result);
-            }
-            return returnData;
+            return TableGet.TableGetHandler<T>(tableName, restClient);
         }
 
-        public T GetTableRecord<T>(string tableName, string id)
+        public SurrealDBResult<T> GetTableRecord<T>(string tableName, string id)
         {
-            var surrealData = TableGet.TableGetSingle<T>(tableName, id, restClient);
-            if (surrealData == default)
-                return default;
-            return surrealData.Result;
+            var surrealResults = TableGet.TableGetHandler<T>(tableName, restClient, id);
+
+            return new SurrealDBResult<T>() {
+                IsSuccessful = surrealResults.IsSuccessful,
+                Error= surrealResults.Error,
+                Result = surrealResults.Results.FirstOrDefault()
+            };
         }
 
         public SurrealDBResult<T> UpdateRecord<T>(string tableName, string id, T data)

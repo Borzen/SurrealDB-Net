@@ -29,10 +29,9 @@ namespace Surreal.Client.Rest.Commands
             RestResponse response = RestSharpTaskRunner.RunRestSharpDelete(client, request);
             bool isSuccessful = response.IsSuccessful;
             string error = "";
-            if (!response.IsSuccessful)
+            if (!isSuccessful)
             {
-                //TODO: Better error handling
-                error = "error happened";
+                error = response.ErrorMessage;
             }
             SurrealDBResult sdbResult = new SurrealDBResult()
             {
