@@ -26,12 +26,13 @@ namespace Surreal.Client.Rest.Helpers
                 };
             }
 
+            var resultData = JsonConvert.DeserializeObject<List<SurrealModel<T>>>(response.Content).FirstOrDefault();
 
             SurrealDBResult<T> result = new SurrealDBResult<T>()
             {
                 Error = "",
                 IsSuccessful = true,
-                Result = JsonConvert.DeserializeObject<SurrealModel<T>>(response.Content).Result.FirstOrDefault()
+                Result = resultData.Result.FirstOrDefault()
             };
             return result;
         }
@@ -54,7 +55,7 @@ namespace Surreal.Client.Rest.Helpers
             {
                 Error = "",
                 IsSuccessful = true,
-                Results = JsonConvert.DeserializeObject<SurrealModel<T>>(response.Content).Result
+                Results = JsonConvert.DeserializeObject<List<SurrealModel<T>>>(response.Content).FirstOrDefault()?.Result
             };
             return result;
 
@@ -67,7 +68,7 @@ namespace Surreal.Client.Rest.Helpers
             {
                 return default;
             }
-            return JsonConvert.DeserializeObject<SurrealModel<T>>(response.Content);
+            return JsonConvert.DeserializeObject<List<SurrealModel<T>>>(response.Content).FirstOrDefault();
         }
 
         private static (bool,string) ResponseErrorChecking(RestResponse response)
@@ -78,9 +79,9 @@ namespace Surreal.Client.Rest.Helpers
                 return (false, response.ErrorMessage);
             }
 
-            var surrealModel = JsonConvert.DeserializeObject<SurrealResponse>(response.Content);
+            var surrealModel = JsonConvert.DeserializeObject<List<SurrealResponse>>(response.Content);
 
-            if (surrealModel.Status != "OK")
+            if (surrealModel[0].Status != "OK")
             {
                 //TODO: Better Error handling
                 return (false, "Error Happened");

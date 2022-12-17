@@ -24,6 +24,7 @@ namespace Surreal.Client.Rest
             };
             restClient.AddDefaultHeader("NS", surrealNamespace);
             restClient.AddDefaultHeader("DB", surrealDb);
+            restClient.AddDefaultHeader("Accept", "application/json");
         }
 
         public SurrealDBResult<T> CreateRecord<T>(string tableName, T data)
