@@ -34,8 +34,8 @@ namespace Surreal.Client.Rest.Commands
                 };
             }
 
-            var surrealModel = JsonConvert.DeserializeObject<SurrealModel<T>>(response.Content);
-            if(surrealModel.Status != "OK")
+            var surrealModel = JsonConvert.DeserializeObject<List<SurrealModel<T>>>(response.Content);
+            if (surrealModel[0].Status != "OK")
             {
                 error = "Error Happened";
             }
@@ -44,7 +44,7 @@ namespace Surreal.Client.Rest.Commands
             {
                 Error = error,
                 IsSuccessful = isSuccessful,
-                Result = isSuccessful ? surrealModel.Result.FirstOrDefault() : default
+                Result = isSuccessful ? surrealModel[0].Result.FirstOrDefault() : default
             };
 
             return surrealDBResult;
